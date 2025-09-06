@@ -1,0 +1,20 @@
+# YAML
+# environments/prod/monitoring-servicemonitor-web.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: web-servicemonitor
+  namespace: monitoring
+  labels:
+    release: kps
+spec:
+  namespaceSelector:
+    matchNames:
+      - blue-green-demo
+  selector:
+    matchLabels:
+      app: web
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 15s

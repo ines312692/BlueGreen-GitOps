@@ -1,0 +1,42 @@
+# YAML
+# argocd/app-jenkins.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: platform-jenkins
+  namespace: argocd
+spec:
+  project: default
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ci
+  source:
+    repoURL: https://charts.jenkins.io
+    chart: jenkins
+    targetRevision: 5.4.2
+    helm:
+      releaseName: jenkins
+      values: |
+        controller:
+          adminUser: admin
+          adminPassword: CHANGE_ME_SECURELY
+          ingress:
+            enabled: true
+            ingressClassName: nginx
+            hostName: jenkins.example.com
+          installPlugins:
+            - workflow-aggregator
+            - git
+            - ssh-agent
+            - credentials-binding
+            - blueocean
+            - github
+            - pipeline-utility-steps
+            - docker-workflow
+        agent:
+          enabled: true
+          image: jenkins/inbound-agent:latest
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

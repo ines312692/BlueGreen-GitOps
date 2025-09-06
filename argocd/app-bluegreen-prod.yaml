@@ -1,0 +1,22 @@
+# YAML
+# argocd/app-bluegreen-prod.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: bluegreen-prod
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/ines312692/BlueGreen-GitOps.git
+    targetRevision: env/prod
+    path: environments/prod
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: blue-green-demo
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

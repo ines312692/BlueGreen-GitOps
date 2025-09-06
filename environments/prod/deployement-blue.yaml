@@ -1,0 +1,51 @@
+# YAML
+# environments/prod/deployment-blue.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-blue
+  namespace: blue-green-demo
+  labels:
+    app: web
+    color: blue
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: web
+      color: blue
+  template:
+    metadata:
+      labels:
+        app: web
+        color: blue
+    spec:
+      containers:
+        - name: app
+          image: inestmimi123/blue-green-app:1.0.0
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: APP_COLOR
+              value: "blue"
+            - name: APP_VERSION
+              value: "1.0.0"
+            - name: PORT
+              value: "3000"
+          ports:
+            - containerPort: 3000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
